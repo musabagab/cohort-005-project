@@ -143,6 +143,20 @@ export async function requireUserId(request: Request): Promise<number> {
 }
 
 /**
+ * Throws unless the signed-in person is a Student.
+ */
+export async function requireStudent(request: Request) {
+  const userId = await requireUserId(request);
+  const user = getUserById(userId);
+
+  if (!user || user.role !== UserRole.Student) {
+    throw data("Only students can access saved lessons.", { status: 403 });
+  }
+
+  return { userId, user };
+}
+
+/**
  * Throws 401 when signed out, 403 when the user can't see the course's content.
  * Use in actions — loader guards don't protect actions.
  */
